@@ -1,8 +1,5 @@
 package com.example.dictionaryapplication;
 
-import javafx.animation.PauseTransition;
-import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -11,21 +8,21 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.chart.ScatterChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
+import java.awt.*;
 import java.io.IOException;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -35,7 +32,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.io.File;
 import java.net.URI;
-import java.util.concurrent.TimeUnit;
 
 public class Game implements Initializable {
     public static final String pathDataGame = "src/main/resources/com/example/dictionaryapplication/dataGame/words.txt";
@@ -293,4 +289,5 @@ public class Game implements Initializable {
             lifeImageView1.setImage(fullHeartImage);
         }
     }
+
 }
