@@ -22,6 +22,76 @@ public class Dictionary {
         return constants.error1;
     }
 
+    public void addWord(String word_target, String word_explain) throws IOException{
+        if (!word_target.contains("/")) {
+            word_target += " /";
+        }
+        Word newWord = new Word(word_target, word_explain);
+        addWord(newWord);
+        searchTree.insertTrieNode(word_target);
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter("D:\\Work\\Second year\\OOP\\CommandLineOOP\\src\\test.txt", true));
+            writer.write("@" + word_target);
+            writer.newLine();
+            writer.write("- " + word_explain);
+            writer.newLine();
+            writer.close();
+            System.out.println("Added!");
+        } catch (IOException ex) {
+            System.out.println(ex);
+        }
+    }
+
+    public void removeWord(String filePath, String deleted_word_target ) throws IOException{ //delete từ khỏi database. Nghiêm cấm đứa nào nghịch.
+        String tempFile = "temp.txt";
+        String target = "@" + deleted_word_target;
+        File oldFile = new File(filePath);
+        File newFile = new File(tempFile);
+        String currentLine;
+        try {
+            FileWriter fw = new FileWriter(tempFile, true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            PrintWriter pw = new PrintWriter(bw);
+
+            FileReader fr = new FileReader(filePath);
+            BufferedReader br = new BufferedReader(fr);
+            currentLine = br.readLine();
+            while (currentLine != null) {
+                if (currentLine.startsWith(target)) {
+                    currentLine = br.readLine();
+                    while(currentLine != null) {
+                        if (currentLine.startsWith("@")) {
+                            break;
+                        }
+                        currentLine = br.readLine();
+                    }
+                }
+                if (currentLine == null) {
+                    break;
+                }
+                pw.println(currentLine);
+                currentLine = br.readLine();
+            }
+            pw.flush();
+            pw.close();
+            fr.close();
+            br.close();
+            bw.close();
+            fw.close();
+
+            oldFile.delete();
+            File dump = new File(filePath);
+            newFile.renameTo(dump);
+            System.out.println("Deleted!");
+        } catch (FileNotFoundException ex) {
+            throw new FileNotFoundException("Something went wrong...");
+        } catch (IOException ex) {
+            throw new IOException("Some thing went wrong...");
+        } catch (StringIndexOutOfBoundsException ex){
+            System.out.println(ex);
+        }
+    }
+
     public ArrayList<String> search(String keyword) { //hàm này để kiếm từ, độ phức tạp cây tìm kiếm của Trie là O(m) với m là độ dài từ cần tìm
         ArrayList<String> result;
         result = searchTree.search(keyword);
