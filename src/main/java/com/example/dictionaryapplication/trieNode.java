@@ -1,3 +1,5 @@
+package com.example.dictionaryapplication;
+
 import java.util.ArrayList;
 
 public class trieNode {
