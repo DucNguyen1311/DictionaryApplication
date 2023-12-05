@@ -34,35 +34,18 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("DictionaryApplication.fxml"));
-        Parent root = loader.load();
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
+       try{
+           FXMLLoader loader = new FXMLLoader(getClass().getResource("DictionaryApplication.fxml"));
+           Parent root = loader.load();
+           Scene scene = new Scene(root);
+           stage.setScene(scene);
+           stage.show();
+       } catch (Exception e){
+           e.printStackTrace ();
+       }
     }
 
 
 
-    /*
-    public void start(Stage primaryStage) {
-        primaryStage.setTitle("JavaFX Online Sound Example");
 
-        Button playButton = new Button("Play Sound");
-
-        // Đường dẫn URL của phương tiện trực tuyến
-        String mediaUrl = "https://api.voicerss.org/?key=61a7d5f8f67646279b4c24dd81bb6576&hl=en-us&src=hello";
-        Media sound = new Media(mediaUrl);
-        MediaPlayer mediaPlayer = new MediaPlayer(sound);
-
-        playButton.setOnAction(e -> mediaPlayer.play());
-
-        StackPane layout = new StackPane();
-        layout.getChildren().add(playButton);
-
-        Scene scene = new Scene(layout, 300, 250);
-        primaryStage.setScene(scene);
-
-        primaryStage.show();
-    }
-     */
 }

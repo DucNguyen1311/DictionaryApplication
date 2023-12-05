@@ -65,8 +65,7 @@ public class Controller implements Initializable {
     }
 
 
-    @FXML
-    private ListView<String> resultListView;
+
 
     private Dictionary dictionary;
 
@@ -75,16 +74,18 @@ public class Controller implements Initializable {
         dictionary = new Dictionary();
 
         // Đọc dữ liệu từ tập tin hoặc thêm dữ liệu mẫu vào từ điển
+
         try {
-            dictionary.readFromFile ("hello.txt");
-        } catch (Exception e) {
-            e.printStackTrace();
+            dictionary.insertFromFile ();
+            searcher.textProperty().addListener((observable, oldValue, newValue) -> {
+                autoComplete ();
+            });
+            setComboBox();
+        } catch (IOException e) {
+            throw new RuntimeException (e);
         }
 
-        searcher.textProperty().addListener((observable, oldValue, newValue) -> {
-            autoComplete ();
-        });
-        setComboBox();
+
     }
 
     /*
@@ -336,10 +337,69 @@ public class Controller implements Initializable {
     }
 
     @FXML
-    public void addNewWord() throws IOException {
-        dictionary.addWord(englishWord.getText(), vietnameseWord.getText(), typeWord.getText ());
-        dictionary.readFromFile ("hello.txt");
-        saveNotice();
+    public void addNewWord() {
+        try {
+            String englishWordText = englishWord.getText();
+            String vietnameseWordText = vietnameseWord.getText();
+            String typeWordText = typeWord.getText();
+
+            // Validate input
+            if (englishWordText.isEmpty() || vietnameseWordText.isEmpty() || typeWordText.isEmpty()) {
+                showAlert("Please enter values for all fields.");
+                return;
+            }
+
+            dictionary.addWord(englishWordText, vietnameseWordText, typeWordText);
+            saveNotice();
+        } catch (IOException e) {
+            showAlert("An error occurred while adding a new word.");
+        }
     }
 
+    private void showAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+    /*
+     * Delete Word
+     */
+    @FXML
+    private TextArea englishDeleteWord = new TextArea();
+
+    @FXML
+    Alert noticeDelete = new Alert(Alert.AlertType.INFORMATION);
+
+    @FXML
+    public void saveDeleteNotice() {
+        noticeDelete.setTitle("Delete new word");
+        noticeDelete.setHeaderText("Your word '" + englishDeleteWord.getText() + "' is deleted successfully");
+
+        Optional<ButtonType> result = noticeDelete.showAndWait();
+    }
+
+    @FXML
+    public void deleteWord() throws IOException {
+        String englishDeleteWordText = englishDeleteWord.getText();
+
+        // Validate input
+        if (englishDeleteWordText.isEmpty() ) {
+            showDeleteAlert ("Please enter values for all fields.");
+            return;
+        }
+
+        dictionary.removeWord ("C:\\Users\\FPT\\DictionaryApplication\\src\\main\\java\\com\\example\\dictionaryapplication\\hello.txt", englishDeleteWordText);
+
+        saveDeleteNotice();
+    }
+
+    private void showDeleteAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
 }

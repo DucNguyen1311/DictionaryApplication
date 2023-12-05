@@ -23,26 +23,6 @@ public class TranslatorApi {
 
 
     /**
-     * Translate English text text into Vietnamese.
-     *
-     * @param text the text to be translated
-     * @return the Vietnamese translation, or "500" if got errors
-     */
-    public static String translateEnToVi (String text) {
-        return translate ("en", "vi", text);
-    }
-
-    /**
-     * Translate Vietnamese text text into English.
-     *
-     * @param text the text to be translated
-     * @return the English translation, or "500" if got errors
-     */
-    public static String translateViToEn (String text) {
-        return translate ("vi", "en", text);
-    }
-
-    /**
      * Translate text from langFrom to langTo.
      *
      * <p><a
@@ -91,7 +71,7 @@ public class TranslatorApi {
 
     public static String langFx(String lang) {
         try {
-            Path path = Path.of("D:\\JAVA\\Lesson1\\untitled\\src\\lang.txt");
+            Path path = Path.of("C:\\Users\\FPT\\DictionaryApplication\\src\\main\\java\\com\\example\\dictionaryapplication\\lang.txt");
             List<String> inputLanguages = Files.readAllLines(path);
             for (String language : inputLanguages) {
                 String[] split = language.split(":");
@@ -105,31 +85,21 @@ public class TranslatorApi {
         }
         return "en-us";
     }
-    private static List<String> spokenWords = new ArrayList<> ();
-    public static void speak (String word, String lang) {
 
-        String mediaUrl = "https://api.voicerss.org/?key=03aaf975468e41e789310826be12c786&hl=" + langFx (lang) + "&src=" + word;
-        Media sound = new Media (mediaUrl);
-        MediaPlayer mediaPlayer = new MediaPlayer (sound);
-        mediaPlayer.play ();
-        spokenWords.add("Audio for " + word);
-    }
-    public static void combineAudio() {
-        // Thực hiện kết hợp các tệp âm thanh trong spokenWords
-        // (Thay thế bằng cách kết hợp âm thanh theo cách phù hợp với API của bạn)
-        System.out.println("Combining audio...");
-        for (String audio : spokenWords) {
-            System.out.println(audio);
+    public static void speak(String word, String lang) {
+        try {
+            // Mã hóa từ hoặc cụm từ để chúng phù hợp với URL
+            String encodedWord = URLEncoder.encode(word, StandardCharsets.UTF_8.toString());
+
+            String mediaUrl = "https://api.voicerss.org/?key=af7b7b09dd7548ceb92055d7becf7fdb&hl=" + langFx(lang) + "&src=" + encodedWord;
+            Media sound = new Media(mediaUrl);
+            MediaPlayer mediaPlayer = new MediaPlayer(sound);
+            mediaPlayer.play();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
-    public static void speakSentence(String sentence, String lang) {
-        List<String> words = Arrays.asList(sentence.split("\\s+"));
-
-        for (String word : words) {
-            speak (word, lang);
-        }
-    }
 }
 
 

@@ -3,9 +3,11 @@ package com.example.dictionaryapplication;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Dictionary {
     private static HashMap<String, Word> wordList;
@@ -27,21 +29,23 @@ public class Dictionary {
         return constants.error1;
     }
 
-    public void addWord(String word_target, String word_explain, String type_word) throws IOException{
+    public void addWord(String word_target, String word_explain, String word_type) throws IOException{
         if (!word_target.contains("/")) {
             word_target += " /";
         }
-        Word newWord = new Word(word_target, word_explain);
+        String tmp = word_type + "\n\t" + word_explain;
+        Word newWord = new Word(word_target, tmp);
         addWord(newWord);
         searchTree.insertTrieNode(word_target);
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter("src/main/java/com/example/dictionaryapplication/hello.txt", true));
-            writer.newLine();
+            BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\FPT\\DictionaryApplication\\src\\main\\java\\com\\example\\dictionaryapplication\\hello.txt", true));
+
             writer.write("@" + word_target);
             writer.newLine();
-            writer.write("*  " + type_word);
+            writer.write("* " + word_type);
             writer.newLine();
-            writer.write ("- "+word_explain);
+            writer.write("- " + word_explain);
+            writer.newLine();
             writer.close();
             System.out.println("Added!");
         } catch (IOException ex) {
@@ -49,54 +53,44 @@ public class Dictionary {
         }
     }
 
-    public void removeWord(String filePath, String deleted_word_target ) throws IOException{ //delete từ khỏi database. Nghiêm cấm đứa nào nghịch.
-        String tempFile = "src/main/java/com/example/dictionaryapplication/hello.txt";
-        String target = "@" + deleted_word_target;
-        File oldFile = new File(filePath);
-        File newFile = new File(tempFile);
-        String currentLine;
-        try {
-            FileWriter fw = new FileWriter(tempFile, true);
-            BufferedWriter bw = new BufferedWriter(fw);
-            PrintWriter pw = new PrintWriter(bw);
+    public void removeWord(String filePath, String deletedWordTarget) throws IOException {
+        List<String> lines = new ArrayList<>();
 
-            FileReader fr = new FileReader(filePath);
-            BufferedReader br = new BufferedReader(fr);
-            currentLine = br.readLine();
-            while (currentLine != null) {
-                if (currentLine.startsWith(target)) {
-                    currentLine = br.readLine();
-                    while(currentLine != null) {
-                        if (currentLine.startsWith("@")) {
-                            break;
-                        }
-                        currentLine = br.readLine();
-                    }
-                }
-                if (currentLine == null) {
-                    break;
-                }
-                pw.println(currentLine);
-                currentLine = br.readLine();
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                lines.add(line);
             }
-            pw.flush();
-            pw.close();
-            fr.close();
-            br.close();
-            bw.close();
-            fw.close();
-
-            oldFile.delete();
-            File dump = new File(filePath);
-            newFile.renameTo(dump);
-            System.out.println("Deleted!");
-        } catch (FileNotFoundException ex) {
-            throw new FileNotFoundException("Something went wrong...");
-        } catch (IOException ex) {
-            throw new IOException("Some thing went wrong...");
-        } catch (StringIndexOutOfBoundsException ex){
-            System.out.println(ex);
         }
+
+        // Xóa từ cần xóa khỏi danh sách
+        boolean foundTarget = false;
+        for (int i = 0; i < lines.size(); i++) {
+            if (lines.get(i).startsWith("@" + deletedWordTarget)) {
+                foundTarget = true;
+                lines.remove(i);  // Xóa dòng chứa từ cần xóa
+                // Xóa các dòng liên quan đến từ đó
+                while (i < lines.size() && !lines.get(i).startsWith("@")) {
+                    lines.remove(i);
+                }
+                break;
+            }
+        }
+
+        if (!foundTarget) {
+            System.out.println("Word not found!");
+            return; // Từ cần xóa không tồn tại
+        }
+
+        // Ghi lại toàn bộ danh sách vào file
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath))) {
+            for (String line : lines) {
+                bw.write(line);
+                bw.newLine();
+            }
+        }
+
+        System.out.println("Deleted!");
     }
 
     public ArrayList<String> search(String keyword) { //hàm này để kiếm từ, độ phức tạp cây tìm kiếm của Trie là O(m) với m là độ dài từ cần tìm
@@ -161,6 +155,11 @@ public class Dictionary {
                 }
                 Line = bufferedReader.readLine();
             }
+            if (wordTarget != "" || wordExplain != ""){
+                Word tmp = new Word (wordTarget, wordExplain);
+                searchTree.insertTrieNode (wordTarget);
+                this.addWord (tmp);
+            }
         } catch (FileNotFoundException ex) {
             throw new FileNotFoundException("Something went wrong...");
         } catch (IOException ex) {
@@ -178,6 +177,9 @@ public class Dictionary {
                 throw new IOException("Something went wrong...");
             }
         }
+    }
+    public void insertFromFile() throws IOException {
+        readFromFile ("hello.txt");
     }
     public Word getWord(String s) {
         return wordList.get(s);
